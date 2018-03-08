@@ -1,7 +1,6 @@
 {
   "name": "linkphp/framework",
   "type": "library",
-  "license": "GBPL-2.1",
   "description": "php 框架",
   "keywords": ["mvc","php mvc framework"],
   "authors": [
