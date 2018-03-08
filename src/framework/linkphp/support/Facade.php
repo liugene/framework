@@ -23,17 +23,16 @@ class Facade
 
     public function getApplicationInstance()
     {
-        return Application::get($this->getApplicationName());
+        self::$instance =  Application::get($this->getApplicationName());
     }
 
     /**
      * 获取示例
-     * @param array $options 实例配置
      * @return static
      */
     public function instance()
     {
-        return $this->getApplicationInstance();
+        return self::$instance;
     }
 
     /**
@@ -47,25 +46,13 @@ class Facade
     {
         if (is_null(self::$instance)) self::$instance = new self();
 
-        $call = substr($method, 1);
-
-        if (0 !== strpos($method, '_') || !is_callable([self::$instance, $call])) {
-            throw new Exception("method not exists:" . $method);
-        }
-
-        return call_user_func_array([self::$instance, $call], $params);
+        return call_user_func_array([self::instance(), $method], $params);
     }
 
     public function __call($name, $arguments)
     {
         if (is_null(self::$instance)) self::$instance = new self();
 
-        $call = substr($name, 1);
-
-        if (0 !== strpos($name, '_') || !is_callable([self::$instance, $call])) {
-            throw new Exception("method not exists:" . $name);
-        }
-
-        return call_user_func_array([self::$instance, $call], $arguments);
+        return call_user_func_array([self::$instance, $name], $arguments);
     }
 }
