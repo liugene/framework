@@ -1,5 +1,5 @@
 {
-  "name": "linkphp/linkphp",
+  "name": "linkphp/framework",
   "type": "library",
   "license": "GBPL-2.1",
   "description": "php 框架",
