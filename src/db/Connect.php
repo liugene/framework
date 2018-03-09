@@ -17,7 +17,7 @@ namespace link\db;
 use PDO;
 use PDOException;
 
-class Connect
+abstract class Connect
 {
 
     private $config = [];
@@ -45,7 +45,7 @@ class Connect
 
     public function paramDns()
     {
-        return $this->config['dns'];
+        return $this->config[0]['dns'];
     }
 
     public function connect()

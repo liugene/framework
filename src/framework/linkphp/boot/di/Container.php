@@ -273,7 +273,7 @@ class Container
              * false
              * 抛出异常
              */
-            throw new ContainerException('类的构造方法不可见!');
+            throw new Exception('类的构造方法不可见!');
         }
         /**
          * 获取构造方法的参数
@@ -289,6 +289,7 @@ class Container
              */
             return $reflectorClass->newInstance();
         }
+        $realName = [];
         /**
          * 遍历构造方法的参数进行注入
          */
@@ -300,12 +301,12 @@ class Container
                  * 并注入
                  */
                 $realName[] = $this->get($parameter);
-                /**
-                 * 依赖注入相关实例并返回
-                 */
-                return $reflectorClass->newInstanceArgs($realName);
             }
         }
+        /**
+         * 依赖注入相关实例并返回
+         */
+        return $reflectorClass->newInstanceArgs($realName);
     }
 
     /**

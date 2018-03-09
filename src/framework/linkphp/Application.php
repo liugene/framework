@@ -25,9 +25,6 @@ class Application
     {
         if(!isset(self::$_init)){
             self::event('system');
-            self::get('linkphp\boot\Middleware')
-                ->import(include LOAD_PATH . 'middleware.php')
-                ->beginMiddleware();
             //初次初始化执行
             self::$_init = new self();
         }

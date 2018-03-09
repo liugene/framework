@@ -16,14 +16,14 @@ class Facade
      * @throw Exception
      * @return mixed
      */
-    public function getApplicationName()
+    public static function getApplicationName()
     {
         throw new Exception('该方法未继承');
     }
 
     public function getApplicationInstance()
     {
-        self::$instance =  Application::get($this->getApplicationName());
+        return Application::get(static::getApplicationName());
     }
 
     /**
@@ -32,7 +32,7 @@ class Facade
      */
     public function instance()
     {
-        return self::$instance;
+        return static::getApplicationInstance();
     }
 
     /**
@@ -44,15 +44,13 @@ class Facade
      */
     public static function __callStatic($method, array $params)
     {
-        if (is_null(self::$instance)) self::$instance = new self();
-
-        return call_user_func_array([self::instance(), $method], $params);
+        $instance = static::instance();
+        return $instance->$method($params);
     }
 
-    public function __call($name, $arguments)
+    public function __call($name, array $arguments)
     {
-        if (is_null(self::$instance)) self::$instance = new self();
-
-        return call_user_func_array([self::$instance, $name], $arguments);
+        $instance = static::instance();
+        return $instance->$name($arguments);
     }
 }

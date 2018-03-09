@@ -4,18 +4,16 @@ namespace linkphp\boot\event\provider;
 
 use linkphp\boot\event\EventDefinition;
 use linkphp\boot\event\EventServerProvider;
-use link\db\Db;
 use linkphp\boot\Exception;
+use linkphp\Application;
 
-class DatabaseProvider implements  EventServerProvider
+class MiddleProvider implements  EventServerProvider
 {
     public function update(EventDefinition $definition)
     {
-        if(file_exists(LOAD_PATH . 'database.php')) {
-            Db::import(require_once LOAD_PATH . 'database.php');
-        } else {
-            throw new Exception('database config file not found');
-        }
+        Application::get('linkphp\boot\Middleware')
+            ->import(include LOAD_PATH . 'middleware.php')
+            ->beginMiddleware();
         return $definition;
         // TODO: Implement update() method.
     }
