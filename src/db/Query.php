@@ -21,26 +21,89 @@ class Query
      */
     private $_pdo;
 
-    private $build;
+    /**
+     * @var Builder
+     */
+    private $_build;
 
+    /**
+     * 表名
+     * @var $table
+     */
     private $table;
 
+    /**
+     * 字段
+     * @var $field
+     */
     private $field;
 
+    /**
+     * 条件
+     * @var $where
+     */
     private $where;
+
+    /**
+     * 关联
+     * @var $join
+     */
+    private $join;
+
+    /**
+     * 限制条数
+     * @var $limit
+     */
+    private $limit;
+
+    /**
+     * 排序
+     * @var $order
+     */
+    private $order;
+
+    /**
+     * 分组
+     * @var $group
+     */
+    private $group;
+
+    /**
+     * 条件
+     * @var $having
+     */
+    private $having;
+
+    /**
+     * 关联
+     * @var $union
+     */
+    private $union;
+
+    private $lock;
+
+    private $value;
+
+    /**
+     * 执行错误
+     * @var $error
+     */
+    private $error;
 
     /**
      * @var PDOResult
      */
     private $pdo_result;
 
-    public function __construct(Connect $connect,PDOResult $PDOResult)
+    public function __construct(Connect $connect,PDOResult $PDOResult,Builder $builder)
     {
         $this->_pdo = $connect;
         $this->pdo_result = $PDOResult;
+        $this->_build = $builder;
     }
 
     /**
+     * 数据库连接方法
      * @return PDO;
      */
     public function connect()
@@ -50,21 +113,89 @@ class Query
             ->connect();
     }
 
+    public function pdo()
+    {
+        return $this->pdo_result->result;
+    }
+
     public function import($file)
     {
         if(is_array($file)) $this->database = $file;
         return;
     }
 
-    public function select($sql='')
+    /**
+     * 数据库查询语句解析方法
+     * 返回对应所有相关二维数组
+     * @param array|null $data
+     * @return PDOStatement
+     */
+    public function select($data=null)
     {
-        $this->pdo_result->exec = $this->connect()->prepare($sql[0]);
+        if(!is_null($data)){
+            $this->pdo_result->exec = $this->connect()->prepare($data[0]);
+        } else {
+            $this->query($this->_build->select($this));
+            return $this->fetchAll();
+        }
         return $this->pdoResult();
     }
 
-    public function insert($sql='')
+    /**
+     * 数据库查询语句解析方法
+     * 返回对应一条相关数组
+     * @param array|null $data
+     * @return PDOStatement
+     */
+    public function find($data=null)
     {
-        $this->pdo_result->exec = $this->connect()->prepare($sql);
+        if(!is_null($data)){
+            $this->pdo_result->exec = $this->connect()->prepare($data[0]);
+        } else {
+            $this->query($this->_build->select($this));
+            return $this->fetch();
+        }
+        return $this->pdoResult();
+    }
+
+    public function insert($data)
+    {
+        $field = '(';
+        $value = '(';
+        foreach($data as $k => $v){
+            if(is_numeric($k)){
+                $this->pdo_result->exec = $this->connect()->prepare($data[0]);
+                return $this->pdoResult();
+            }
+            $field .= $k . ',';
+            $value .= $v . ',';
+        }
+        $field = substr($field, 0, -1) . ')';
+        $value = substr($value, 0, -1) . ')';
+        $this->field($field);
+        $this->value($value);
+        return $this->exec($this->_build->insert($this));
+    }
+
+    public function insertAll($data)
+    {
+        if(is_array($data)){
+            $field = '(';
+            $value = '(';
+            foreach($data as $k => $v){
+                //是数组将键名以及值用','拼接成字符串形式
+                $value = implode('\',\'', $v);
+                $filed = implode(',', $k);
+                dump($filed);die;
+                $field .= $k . ',';
+                $value .= $v . ',';
+            }
+        } else {
+            //字段为字符串是直接拼接数据库插入语句
+            $sql = "INSERT INTO " . static::$_function['table'] . " ( array_keys($data) ) VALUES ( '".array_values($data)."')";
+        }
+        $result = static::$_dao->insert($sql);
+        return $result;
     }
 
     public function delete($sql='')
@@ -77,6 +208,10 @@ class Query
         $this->pdo_result->exec = $this->connect()->prepare($sql);
     }
 
+    /**
+     * 执行一条预处理语句
+     * @return bool
+     */
     public function execute()
     {
         return $this->pdo_result->exec->execute();
@@ -91,8 +226,13 @@ class Query
 
     public function table($table)
     {
-        $this->table = $table;
+        $this->table = $table[0];
         return $this;
+    }
+
+    public function getTable()
+    {
+        return $this->table;
     }
 
     public function field($field)
@@ -101,29 +241,120 @@ class Query
         return $this;
     }
 
-    public function where($condition)
+    public function getField()
     {
-        $this->where = $condition;
+        return $this->field;
+    }
+
+    public function value($value)
+    {
+        $this->value = $value;
         return $this;
     }
 
-    public function join(){}
+    public function getValue()
+    {
+        return $this->value;
+    }
 
-    public function limit(){}
+    public function where($condition)
+    {
+        $this->where = ' WHERE ' . $condition;
+        return $this;
+    }
 
-    public function order(){}
+    public function getWhere()
+    {
+        return $this->where;
+    }
 
-    public function group(){}
+    public function join($join)
+    {
+        $this->join = $join;
+        return $this;
+    }
+
+    public function getJoin()
+    {
+        return $this->join;
+    }
+
+    public function limit($limit)
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    public function order($order)
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    public function group($group)
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function getGroup()
+    {
+        return $this->group;
+    }
 
     public function lock(){}
 
-    public function having(){}
+    public function having($having)
+    {
+        $this->having = $having;
+        return $this;
+    }
+
+    public function getHaving()
+    {
+        return $this->having;
+    }
+
+    public function union($union)
+    {
+        $this->union = $union;
+        return $this;
+    }
+
+    public function getUnion()
+    {
+        return $this->union;
+    }
+
+    public function locks($locks)
+    {
+        $this->lock = $locks;
+        return $this;
+    }
+
+    public function getLocks()
+    {
+        return $this->lock;
+    }
 
     public function count(){}
 
     public function sum(){}
 
-    public function getLastSql(){}
+    public function getLastSql()
+    {
+        return $this->pdo_result->result->queryString;
+    }
 
     public function transaction(){}
 
@@ -152,59 +383,20 @@ class Query
 
     public function exec($sql)
     {
-        return $this->connect()->exec($sql);
+        $this->pdo_result->rowNum = $this->connect()->exec($sql);
+        return $this->pdo_result->rowNum;
     }
 
     public function build(){}
 
-    /**
-     * 数据库查询语句解析方法
-     * 返回对应一条相关数组
-     */
-    public function find()
+    public function fetch()
     {
-        $sql = 'SELECT ' . $this->field . ' FROM ' . $this->table . ' ' . $this->where;
-        $result = static::$_dao->find($sql);
-        $this->freeFunc();
-        return $result;
+        return $this->pdo_result->result->fetch();
     }
 
-
-    /**
-     * 数据库查询语句解析方法
-     * 返回对应所有相关数组
-     */
-    public function selectbak()
+    public function fetchAll()
     {
-        $sql = 'select ' . static::$_function['field'] . ' from ' . static::$_function['table'] . ' ' . static::$_function['where'];
-        $result = static::$_dao->select($sql);
-        $this->freeFunc();
-        return $result;
-    }
-
-
-    public function insertbak($data)
-    {
-        if(is_array($data)){
-            //是数组将键名以及值用','拼接成字符串形式
-            $value = implode('\',\'', array_values($data));
-            $fileds = implode(',', array_keys($data));
-            //拼接数据库插入语句
-            $sql = "INSERT INTO " . static::$_function['table'] . " ( $fileds ) VALUES ( '$value' )";
-        } else {
-            //字段为字符串是直接拼接数据库插入语句
-            $sql = "INSERT INTO " . static::$_function['table'] . " ( array_keys($data) ) VALUES ( '".array_values($data)."')";
-        }
-        $result = static::$_dao->insert($sql);
-        return $result;
-    }
-
-    public function add($value)
-    {
-        $sql = 'INSERT INTO ' . static::$_function['table'] . '(' . static::$_function['field']  . ') ' . 'VALUES(' . $value . ') ' . static::$_function['where'];
-        $result = static::$_dao->query($sql);
-        $this->freeFunc();
-        return $result;
+        return $this->pdo_result->result->fetchAll();
     }
 
 }
