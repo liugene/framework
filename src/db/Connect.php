@@ -17,7 +17,7 @@ namespace link\db;
 use PDO;
 use PDOException;
 
-abstract class Connect
+class Connect
 {
 
     private $config = [];
