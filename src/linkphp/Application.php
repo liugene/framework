@@ -11,8 +11,8 @@ use bootstrap\Loader;
 use linkphp\boot\http\HttpRequest;
 use linkphp\boot\Make;
 use linkphp\router\router\Router;
-use linkphp\boot\Event;
-use linkphp\boot\event\EventDefinition;
+use linkphp\event\Event;
+use linkphp\event\EventDefinition;
 use linkphp\db\Query;
 
 class Application
