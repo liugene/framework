@@ -14,6 +14,7 @@
 
 namespace linkphp\boot\view\engine;
 
+use linkphp\boot\Exception;
 use linkphp\boot\view\Engine;
 
 class Link extends Engine
@@ -38,45 +39,56 @@ class Link extends Engine
      * 右界定符号
      * */
     private $right_limit;
-    public function __construct()
-    {
-        $this->_leftlimit = C('SET_LEFT_LIMITER');
-        $this->_rightlimit = C('SET_RIGHT_LIMITER');
-    }
+
+
     /**
      * 模板编译
      * */
     private function fetch($tempfile)
     {
         $CompileFile = file_get_contents($tempfile);
-        $pregRule_L = '#' . $this->left_limit . '#';
-        $pregRule_R = '#' . $this->right_limit . '#';
+        $pregRule_L = '#' . config('set_left_limiter') . '#';
+        $pregRule_R = '#' . config('set_right_limiter') . '#';
         $this->temp_content = preg_replace($pregRule_L,'<?php echo ',$CompileFile);
         $this->temp_content = preg_replace($pregRule_R,'; ?>',$this->temp_content);
         $this->temp_c = RUNTIME_PATH . 'temp/temp_c/' . md5($tempfile) . '.c.php';
-        file_put_contents($this->temp_c,$this->temp_content);
+        // 检测模板目录
+        $dir = dirname($this->temp_c);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        if(false === file_put_contents($this->temp_c,$this->temp_content)){
+            throw new Exception('runtime文件夹无法创建，请检查目录权限');
+        }
     }
     /**
      * 加载视图方法
      * */
-    public function display($tempfile='',$name='',$value='')
+    public function display($template)
     {
-        $filename = $tempfile == '' ? CURRENT_VIEW_PATH . '/' . CONTROLLER . '/' . ACTION  . C('DEFAULT_THEME_SUFFIX') : $tempfile;
+        $filename = CACHE_PATH . 'view/' . $template . config('default_theme_suffix');
         $this->fetch($filename);
         //加载视图文件
         // 模板阵列变量分解成为独立变量
         extract($this->tVar);
-        if(file_exists($filename)){
-            include $this->temp_c;
+        if(file_exists($this->temp_c)){
+            include_once $this->temp_c;
         } else {
             throw new \Exception($filename . '视图文件不存在');
         }
     }
     /**
-     * 模板赋值
-     * */
-    public function assign($name,$value)
+     * 模板赋值输出方法
+     * @param string $name
+     * @param string $value
+     */
+    public function assign($name,$value=null)
     {
+        //模板赋值
+        if(is_array($name)){
+            $this->tVar = $name;
+            return;
+        }
         $this->tVar[$name] = $value;
     }
 }

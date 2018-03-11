@@ -13,6 +13,7 @@ use linkphp\boot\Make;
 use linkphp\boot\router\Router;
 use linkphp\boot\Event;
 use linkphp\boot\event\EventDefinition;
+use link\db\Query;
 
 class Application
 {
@@ -108,7 +109,36 @@ class Application
         return Component::instance()->bind($definition);
     }
 
-    static public function singleton(){}
+    static public function singleton($alias,$callback)
+    {
+        return self::bind(
+            Application::definition()
+                ->setAlias($alias)
+                ->setIsSingleton(true)
+                ->setCallBack($callback)
+        );
+    }
+
+    public static function singletonEager($alias,$callback)
+    {
+        return self::bind(
+            Application::definition()
+                ->setAlias($alias)
+                ->setIsEager(true)
+                ->setIsSingleton(true)
+                ->setClassName($callback)
+        );
+    }
+
+    public static function eager($alias,$callback)
+    {
+        return self::bind(
+            Application::definition()
+                ->setAlias($alias)
+                ->setIsEager(true)
+                ->setClassName($callback)
+        );
+    }
 
     /**
      * 获取实例
@@ -185,7 +215,7 @@ class Application
      * 获取事件类实例
      * @param string $server
      * @param string|array $events
-     * @return Event|mixed
+     * @return mixed
      */
     static public function event($server='',$events='')
     {
@@ -227,6 +257,32 @@ class Application
     static public function eventDefinition()
     {
         return new EventDefinition();
+    }
+
+    /**
+     * @param mixed $template
+     * @param array $data
+     */
+    public static function view($template,$data=[])
+    {
+        $view = self::get('linkphp\boot\View');
+        $view->assign($data);
+        $view->display($template);
+    }
+
+    public static function cache($key,$value=null)
+    {
+        if(is_null($value)) return self::get('link\cache\Cache')->get($key);
+        return self::get('link\cache\Cache')->put($key,$value);
+    }
+
+    /**
+     * 获取DB类实例
+     * @return Query
+     */
+    public static function db()
+    {
+        return self::get('link\db\Query');
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 
 use linkphp\Application;
+use link\db\Query;
 
 if (!function_exists('error')) {
     function error($url,$info=null,$wait=3)
@@ -20,7 +21,7 @@ if (!function_exists('config')) {
     /**
      * 获取配置信息
      * @param string $key
-     * @return Config
+     * @return mixed
      */
     function config($key='')
     {
@@ -55,6 +56,16 @@ if (!function_exists('request')) {
     function request()
     {
         return Application::get('linkphp\\boot\\http\\Restful')->request();
+    }
+}
+
+if (!function_exists('db')) {
+    /**
+     * @return Query
+     */
+    function db()
+    {
+        return Application::get('link\\db\\Query');
     }
 }
 
@@ -103,6 +114,19 @@ if (!function_exists('dump')) {
         echo "<pre>";
         var_dump($var);
         echo "</pre>";
+    }
+}
+
+if (!function_exists('view')) {
+    /**
+     * @param mixed $template
+     * @param array $data
+     */
+    function view($template,$data=[])
+    {
+        $view = Application::get('linkphp\boot\View');
+        $view->assign($data);
+        $view->display($template);
     }
 }
 

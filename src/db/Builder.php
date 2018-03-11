@@ -45,7 +45,7 @@ class Builder
     public function insert(Query $query)
     {
         $sql = str_replace(
-            ['%TABLE%','(%FIELD%)','(%DATA%)','%COMMENT%'],
+            ['%TABLE%','%FIELD%','%DATA%','%COMMENT%'],
             [
                 $query->getTable(),
                 $query->getField(),
@@ -54,10 +54,50 @@ class Builder
         return $sql;
     }
 
-    public function insertAll(){}
+    public function insertAll(Query $query)
+    {
+        $sql = str_replace(
+            ['%TABLE%','%FIELD%','%DATA%','%COMMENT%'],
+            [
+                $query->getTable(),
+                $query->getField(),
+                $query->getValue(),
+            ],$this->insert_all_sql);
+        return $sql;
+    }
 
-    public function delete(Query $query){}
+    public function delete(Query $query)
+    {
+        $sql = str_replace(
+            ['%TABLE%','%USING%','%JOIN%','%WHERE%','%ORDER%','%LIMIT%','%LOCK%','%COMMENT%'],
+            [
+                $query->getTable(),
+                $query->getField(),
+                $query->getJoin(),
+                $query->getWhere(),
+                $query->getOrder(),
+                $query->getLimit(),
+                $query->getLocks(),
+            ],$this->delete_sql);
+        dump($sql);die;
+        return $sql;
+    }
 
-    public function update(Query $query){}
+    public function update(Query $query)
+    {
+        $sql = str_replace(
+            ['%TABLE%','%USING%','%JOIN%','%WHERE%','%ORDER%','%LIMIT%','%LOCK%','%COMMENT%'],
+            [
+                $query->getTable(),
+                $query->getField(),
+                $query->getJoin(),
+                $query->getWhere(),
+                $query->getOrder(),
+                $query->getLimit(),
+                $query->getLocks(),
+            ],$this->update_sql);
+        dump($sql);die;
+        return $sql;
+    }
 
 }

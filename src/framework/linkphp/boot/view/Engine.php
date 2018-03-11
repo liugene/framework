@@ -5,8 +5,8 @@ namespace linkphp\boot\view;
 abstract class Engine
 {
 
-    public function display(){}
+    abstract public function display($template);
 
-    public function assign(){}
+    abstract public function assign($name,$value=null);
 
 }

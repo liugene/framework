@@ -128,7 +128,7 @@ class Query
      * 数据库查询语句解析方法
      * 返回对应所有相关二维数组
      * @param array|null $data
-     * @return PDOStatement
+     * @return PDOResult
      */
     public function select($data=null)
     {
@@ -145,7 +145,7 @@ class Query
      * 数据库查询语句解析方法
      * 返回对应一条相关数组
      * @param array|null $data
-     * @return PDOStatement
+     * @return PDOResult
      */
     public function find($data=null)
     {
@@ -158,10 +158,10 @@ class Query
         return $this->pdoResult();
     }
 
-    public function insert($data)
+    public function insert(array $data)
     {
-        $field = '(';
-        $value = '(';
+        $field = '';
+        $value = '';
         foreach($data as $k => $v){
             if(is_numeric($k)){
                 $this->pdo_result->exec = $this->connect()->prepare($data[0]);
@@ -170,42 +170,47 @@ class Query
             $field .= $k . ',';
             $value .= $v . ',';
         }
-        $field = substr($field, 0, -1) . ')';
-        $value = substr($value, 0, -1) . ')';
+        $field = substr($field, 0, -1);
+        $value = substr($value, 0, -1);
         $this->field($field);
         $this->value($value);
         return $this->exec($this->_build->insert($this));
     }
 
-    public function insertAll($data)
+    public function insertAll(array $data)
     {
-        if(is_array($data)){
-            $field = '(';
-            $value = '(';
-            foreach($data as $k => $v){
-                //是数组将键名以及值用','拼接成字符串形式
-                $value = implode('\',\'', $v);
-                $filed = implode(',', $k);
-                dump($filed);die;
-                $field .= $k . ',';
-                $value .= $v . ',';
+        foreach($data as $k => $v){
+            $values = '(';
+            foreach ($v as $id => $item) {
+                $values .= $item . ',';
             }
-        } else {
-            //字段为字符串是直接拼接数据库插入语句
-            $sql = "INSERT INTO " . static::$_function['table'] . " ( array_keys($data) ) VALUES ( '".array_values($data)."')";
+            $value[] = substr($values, 0, -1) . ')';
         }
-        $result = static::$_dao->insert($sql);
-        return $result;
+        $value = implode(',',$value);
+        $field = implode(',',array_keys($data[0]));
+        $this->value($value);
+        $this->field($field);
+        return $this->exec($this->_build->insertAll($this));
     }
 
-    public function delete($sql='')
+    public function delete($data=null)
     {
-        $this->pdo_result->exec = $this->connect()->prepare($sql);
+        if(!is_null($data)){
+            $this->pdo_result->exec = $this->connect()->prepare($data[0]);
+        } else {
+            return $this->exec($this->query($this->_build->delete($this)));
+        }
+        return $this->pdoResult();
     }
 
-    public function update($sql='')
+    public function update($data=null)
     {
-        $this->pdo_result->exec = $this->connect()->prepare($sql);
+        if(!is_null($data)){
+            $this->pdo_result->exec = $this->connect()->prepare($data[0]);
+        } else {
+            return $this->exec($this->query($this->_build->update($this)));
+        }
+        return $this->pdoResult();
     }
 
     /**

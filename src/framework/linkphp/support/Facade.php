@@ -21,16 +21,16 @@ class Facade
         throw new Exception('该方法未继承');
     }
 
-    public function getApplicationInstance()
+    public static function getApplicationInstance()
     {
         return Application::get(static::getApplicationName());
     }
 
     /**
      * 获取示例
-     * @return static
+     * @return mixed
      */
-    public function instance()
+    public static function instance()
     {
         return static::getApplicationInstance();
     }

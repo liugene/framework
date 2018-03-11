@@ -11,47 +11,44 @@
  *            LinkPHP框架视图控制类                  *
  * --------------------------------------------------*
  */
- 
- namespace linkphp\boot;
- class View{
-    
-    /**
-     * 模板输出变量
-     * @var tVar
-     * @access protected
-     */ 
-    protected $_tVar     =   array();
-    
+
+namespace linkphp\boot;
+class View
+{
+
+    private static $_instance;
+
+    private $_engine;
+
+    public static function instance()
+    {
+        if(is_null(self::$_instance)) self::$_instance = new self();
+        return self::$_instance;
+    }
+
+    public function engine()
+    {
+        if(is_null($this->_engine)) $this->_engine = new \linkphp\boot\view\engine\Link();
+        return $this->_engine;
+    }
+
     /**
      * 加载显示模板视图方法
+     * @param string $template
      */
- 
-     public function display($tempfile='',$name='',$value=''){
-        //ob_start();
-        //header('Content-Type:text/html;charset=utf8');
-        //ob_end_flush();
-        //加载视图文件
-        // 模板阵列变量分解成为独立变量
-        extract($this->_tVar);
-        require(CURRENT_VIEW_PATH . '/' . CONTROLLER . '/' . ACTION . '/' . ACTION . C('default_theme_suffix'));
-     }
-     
-     /**
-      * 模板赋值输出方法
-      */
-     public function assign($name,$value){
-        //模板赋值
-        $this->_tVar[$name] = $value;
-     }
-     
-     /**
-      * 模板输出方法可输出HTML方法
-      */
-     public function show($content=''){
-        //ob_start();
-        //header('Content-Type:text/html;charset=utf8');
-        //ob_end_flush();
-        require TEMP_PATH . 'appsuccess' . C('DEFAULT_THEME_SUFFIX');
-        echo $content;
-     }
- }
+    public function display($template)
+    {
+        $this->engine()->display($template);
+    }
+
+    /**
+     * 模板赋值输出方法
+     * @param string $name
+     * @param string $value
+     */
+    public function assign($name,$value=null)
+    {
+        $this->engine()->assign($name,$value);
+    }
+
+}
