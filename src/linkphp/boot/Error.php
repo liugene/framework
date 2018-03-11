@@ -326,7 +326,7 @@ class Error
      *自定义异常错误处理函数
      * @param Object Exception $e
      */
-    static public function dealException(Exception $e)
+    static public function dealException($e)
     {
         self::$error_type = 'Exception';
         self::$timestamp = date('Y-m-d H:i:s',time());
