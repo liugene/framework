@@ -2,7 +2,7 @@
 
 namespace linkphp;
 
-use linkphp\boot\Config;
+use linkphp\config\Config;
 use linkphp\boot\Environment;
 use linkphp\boot\Component;
 use linkphp\boot\Definition;
@@ -185,7 +185,7 @@ class Application
      */
     static public function config($key='')
     {
-        return $key=='' ? self::get('linkphp\boot\Config') : self::get('linkphp\boot\Config')->get($key);
+        return $key=='' ? self::get('linkphp\config\Config') : self::get('linkphp\config\Config')->get($key);
     }
 
     static public function middleware($middle,$middleware=null)

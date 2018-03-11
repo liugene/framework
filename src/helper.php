@@ -25,7 +25,7 @@ if (!function_exists('config')) {
      */
     function config($key='')
     {
-    return $key=='' ? Application::get('linkphp\boot\Config') : Application::get('linkphp\boot\Config')->get($key);
+    return $key=='' ? Application::get('linkphp\config\Config') : Application::get('linkphp\config\Config')->get($key);
     }
 }
 
