@@ -282,7 +282,7 @@ class Application
      */
     public static function db()
     {
-        return self::get('link\db\Query');
+        return self::get('linkphp\db\Query');
     }
 
 

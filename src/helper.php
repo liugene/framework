@@ -65,7 +65,7 @@ if (!function_exists('db')) {
      */
     function db()
     {
-        return Application::get('link\\db\\Query');
+        return Application::get('linkphp\\db\\Query');
     }
 }
 
