@@ -10,10 +10,10 @@ use linkphp\boot\di\InstanceDefinition;
 use bootstrap\Loader;
 use linkphp\boot\http\HttpRequest;
 use linkphp\boot\Make;
-use linkphp\boot\router\Router;
+use linkphp\router\Router;
 use linkphp\boot\Event;
 use linkphp\boot\event\EventDefinition;
-use link\db\Query;
+use linkphp\db\Query;
 
 class Application
 {
@@ -272,8 +272,8 @@ class Application
 
     public static function cache($key,$value=null)
     {
-        if(is_null($value)) return self::get('link\cache\Cache')->get($key);
-        return self::get('link\cache\Cache')->put($key,$value);
+        if(is_null($value)) return self::get('linkphp\cache\Cache')->get($key);
+        return self::get('linkphp\cache\Cache')->put($key,$value);
     }
 
     /**
