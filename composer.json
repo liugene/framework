@@ -14,8 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "linkphp\\": "src/linkphp",
-      "link\\": "src"
+      "linkphp\\": "src/linkphp"
     }
   }
 }
