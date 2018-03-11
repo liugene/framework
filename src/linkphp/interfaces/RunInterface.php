@@ -1,6 +1,6 @@
 <?php
 
-namespace linkphp\boot\interfaces;
+namespace linkphp\interfaces;
 
 interface RunInterface
 {

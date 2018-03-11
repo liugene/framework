@@ -15,7 +15,7 @@
 namespace linkphp\boot;
 use linkphp\Application;
 use linkphp\boot\cli\command\Output;
-use linkphp\boot\interfaces\RunInterface;
+use linkphp\interfaces\RunInterface;
 
 class Command implements RunInterface
 {
