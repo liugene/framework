@@ -24,7 +24,7 @@ defined('__ATTACH__') or define('__ATTACH__', WEB_PATH . 'attachment/');
 //定义框架运行产生文件文件夹目录常量
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',CACHE_PATH . 'runtime/');
 //定义LinkPHP框架目录常量
-defined('FRAMEWORK_PATH') or define('FRAMEWORK_PATH', VENDOR_PATH . 'linkphp/framework/src/framework/');
+defined('FRAMEWORK_PATH') or define('FRAMEWORK_PATH', VENDOR_PATH . 'linkphp/framework/src/');
 //定义LinkPHP框架核心类目录常量
 defined('CORE_PATH') or define('CORE_PATH', FRAMEWORK_PATH . 'linkphp/boot/');
 //定义LinkPHP框架启动目录常量
