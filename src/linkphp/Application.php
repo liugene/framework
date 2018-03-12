@@ -9,7 +9,7 @@ use linkphp\boot\Definition;
 use linkphp\di\InstanceDefinition;
 use bootstrap\Loader;
 use linkphp\http\HttpRequest;
-use linkphp\boot\Make;
+use linkphp\Make;
 use linkphp\router\router\Router;
 use linkphp\event\Event;
 use linkphp\event\EventDefinition;
@@ -190,15 +190,15 @@ class Application
 
     static public function middleware($middle,$middleware=null)
     {
-        if(self::get('linkphp\boot\Middleware')->isValidate($middle)){
-            return self::get('linkphp\boot\Middleware')->$middle($middleware);
+        if(self::get('linkphp\middleware\Middleware')->isValidate($middle)){
+            return self::get('linkphp\middleware\Middleware')->$middle($middleware);
         }
     }
 
     static public function hook($middle)
     {
-        if(self::get('linkphp\boot\Middleware')->isValidate($middle)){
-            return self::get('linkphp\boot\Middleware')->$middle();
+        if(self::get('linkphp\middleware\Middleware')->isValidate($middle)){
+            return self::get('linkphp\middleware\Middleware')->$middle();
         }
     }
 

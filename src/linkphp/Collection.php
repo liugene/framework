@@ -1,6 +1,6 @@
 <?php
 
-namespace linkphp\boot;
+namespace linkphp;
 
 use ArrayAccess;
 
