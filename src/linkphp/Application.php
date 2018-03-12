@@ -6,7 +6,7 @@ use linkphp\config\Config;
 use linkphp\boot\Environment;
 use linkphp\boot\Component;
 use linkphp\boot\Definition;
-use linkphp\boot\di\InstanceDefinition;
+use linkphp\di\InstanceDefinition;
 use bootstrap\Loader;
 use linkphp\http\HttpRequest;
 use linkphp\boot\Make;
