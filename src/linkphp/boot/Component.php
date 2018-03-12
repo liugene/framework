@@ -2,7 +2,7 @@
 
 namespace linkphp\boot;
 
-use linkphp\boot\di\Container;
+use linkphp\di\Container;
 
 class Component
 {

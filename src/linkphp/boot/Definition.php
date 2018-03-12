@@ -2,7 +2,7 @@
 
 namespace linkphp\boot;
 
-use linkphp\boot\di\InstanceDefinition;
+use linkphp\di\InstanceDefinition;
 
 class Definition extends InstanceDefinition
 {}
