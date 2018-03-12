@@ -15,9 +15,10 @@
 namespace linkphp\boot\middleware;
 
 use linkphp\boot\Exception;
+use linkphp\interfaces\MiddlewareInterface;
 use Closure;
 
-class Middleware
+class Middleware implements MiddlewareInterface
 {
 
     protected $beginMiddleware = [];
