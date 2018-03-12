@@ -1,7 +1,7 @@
 <?php
 
 use linkphp\Application;
-use link\db\Query;
+use linkphp\db\Query;
 
 if (!function_exists('error')) {
     function error($url,$info=null,$wait=3)
@@ -55,7 +55,7 @@ if (!function_exists('request')) {
      */
     function request()
     {
-        return Application::get('linkphp\\boot\\http\\Restful')->request();
+        return Application::get('linkphp\\http\\Restful')->request();
     }
 }
 

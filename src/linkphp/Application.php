@@ -8,7 +8,7 @@ use linkphp\boot\Component;
 use linkphp\boot\Definition;
 use linkphp\boot\di\InstanceDefinition;
 use bootstrap\Loader;
-use linkphp\boot\http\HttpRequest;
+use linkphp\http\HttpRequest;
 use linkphp\boot\Make;
 use linkphp\router\router\Router;
 use linkphp\event\Event;
@@ -91,7 +91,7 @@ class Application
      */
     static public function httpRequest()
     {
-        return self::get('linkphp\boot\http\Restful')->request();
+        return self::get('linkphp\http\Restful')->request();
     }
 
     /**
