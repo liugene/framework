@@ -124,7 +124,7 @@ if (!function_exists('view')) {
      */
     function view($template,$data=[])
     {
-        $view = Application::get('linkphp\boot\View');
+        $view = Application::get('linkphp\template\View');
         $view->assign($data);
         $view->display($template);
     }

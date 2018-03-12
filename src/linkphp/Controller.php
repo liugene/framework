@@ -14,8 +14,8 @@
 
  namespace linkphp;
 
- use linkphp\boot\View;
- use linkphp\boot\Smarty;
+ use linkphp\template\View;
+ use linkphp\template\Smarty;
 
  class Controller{
 

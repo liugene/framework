@@ -265,7 +265,7 @@ class Application
      */
     public static function view($template,$data=[])
     {
-        $view = self::get('linkphp\boot\View');
+        $view = self::get('linkphp\template\View');
         $view->assign($data);
         $view->display($template);
     }
