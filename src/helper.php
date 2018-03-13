@@ -2,6 +2,7 @@
 
 use linkphp\Application;
 use linkphp\db\Query;
+use linkphp\http\HttpRequest;
 
 if (!function_exists('error')) {
     function error($url,$info=null,$wait=3)
