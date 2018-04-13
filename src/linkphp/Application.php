@@ -7,7 +7,7 @@ use linkphp\boot\Environment;
 use linkphp\boot\Component;
 use linkphp\boot\Definition;
 use linkphp\di\InstanceDefinition;
-use bootstrap\Loader;
+use linkphp\loader\Loader;
 use linkphp\http\HttpRequest;
 use linkphp\Make;
 use linkphp\router\router\Router;
@@ -32,8 +32,33 @@ class Application
         return self::$_init;
     }
 
-    public function check(Environment $env)
+    public function check()
     {
+        IS_CLI ?
+            self::env()
+                ->selectEnvModel(
+                    self::singleton(
+                        'envmodel',
+                        function(){
+                            self::singletonEager(
+                                'run',
+                                'linkphp\console\Command'
+                            );
+                            return self::get('run');
+                        })
+                )->requestCmdHandle() :
+            self::env()
+                ->selectEnvModel(
+                    self::singleton(
+                        'envmodel',
+                        function(){
+                            self::singletonEager(
+                                'run',
+                                'linkphp\router\Router'
+                            );
+                            return self::get('run');
+                        })
+                )->requestRouterHandle();
         return $this;
     }
 

@@ -118,6 +118,19 @@ if (!function_exists('dump')) {
     }
 }
 
+if (!function_exists('cache')) {
+    /**
+     * 缓存操作方法
+     * @param string $key
+     * @param string $value
+     */
+    function cache($key,$value=null)
+    {
+        if(is_null($value)) return Application::get('linkphp\cache\Cache')->get($key);
+        return Application::get('linkphp\cache\Cache')->put($key,$value);
+    }
+}
+
 if (!function_exists('view')) {
     /**
      * @param mixed $template
