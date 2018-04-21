@@ -49,7 +49,7 @@ class Environment
                     Application::router()
                         ->setUrlModel('1')
                         ->setPath(
-                            Application::input('server.REQUEST_URI')
+                            Application::input('server.PATH_INFO')
                         )
                         ->setDefaultPlatform('main')
                         ->setDefaultController('Home')
