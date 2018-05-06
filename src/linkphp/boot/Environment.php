@@ -77,7 +77,9 @@ class Environment
             ->setCmdParam(
                 Application::input('server.argv')
             );
-        Application::get('envmodel')->init();
+        Application::get('envmodel')->set(
+            Application::get('run')->import(require LOAD_PATH . 'command.php')
+        )->init();
         return $this;
     }
 

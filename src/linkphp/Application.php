@@ -42,7 +42,7 @@ class Application
                         function(){
                             self::singletonEager(
                                 'run',
-                                'linkphp\console\Command'
+                                'linkphp\console\Console'
                             );
                             return self::get('run');
                         })
