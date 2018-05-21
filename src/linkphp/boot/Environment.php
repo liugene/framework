@@ -20,7 +20,9 @@ class Environment
 
     static private $_instance;
 
-    static public function getInstance()
+    static private $init = false;
+
+    static public function instance()
     {
         if(!isset(self::$_instance)){
             self::$_instance = new self();
@@ -71,16 +73,19 @@ class Environment
         return $this;
     }
 
-    public function requestCmdHandle()
+    static public function requestCmdHandle()
     {
-        Application::httpRequest()
-            ->setCmdParam(
-                Application::input('server.argv')
-            );
-        Application::get('envmodel')->set(
-            Application::get('run')->import(require LOAD_PATH . 'command.php')
-        )->init();
-        return $this;
+        if(!self::$init){
+            self::$init = true;
+            Application::httpRequest()
+                ->setCmdParam(
+                    Application::input('server.argv')
+                );
+            Application::get('envmodel')->set(
+                Application::get('run')
+                    ->import(require LOAD_PATH . 'command.php')
+            )->init();
+        }
     }
 
 }
