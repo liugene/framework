@@ -1,6 +1,6 @@
 <?php
 
-namespace linkphp\support;
+namespace linkphp\facade;
 
 use linkphp\Application;
 use linkphp\boot\Exception;
@@ -14,14 +14,13 @@ class Facade
 
     /**
      * @throw Exception
-     * @return mixed
      */
-    public static function getApplicationName()
+    protected static function getApplicationName()
     {
         throw new Exception('该方法未继承');
     }
 
-    public static function getApplicationInstance()
+    private static function getApplicationInstance()
     {
         return Application::get(static::getApplicationName());
     }
@@ -30,7 +29,7 @@ class Facade
      * 获取示例
      * @return mixed
      */
-    public static function instance()
+    private static function instance()
     {
         return static::getApplicationInstance();
     }
@@ -45,12 +44,12 @@ class Facade
     public static function __callStatic($method, array $params)
     {
         $instance = static::instance();
-        return $instance->$method($params);
+        return $instance->$method(...$params);
     }
 
     public function __call($name, array $arguments)
     {
         $instance = static::instance();
-        return $instance->$name($arguments);
+        return $instance->$name(...$arguments);
     }
 }

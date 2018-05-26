@@ -82,7 +82,7 @@ class Environment
                     Application::input('server.argv')
                 );
             Application::get('envmodel')->set(
-                Application::get('run')
+                Application::make(\linkphp\console\Console::class)
                     ->import(require LOAD_PATH . 'command.php')
             )->init();
         }

@@ -4,15 +4,14 @@ namespace linkphp;
 
 use linkphp\config\Config;
 use linkphp\boot\Environment;
-use linkphp\boot\Component;
-use linkphp\boot\Definition;
+use linkphp\di\Container;
 use linkphp\di\InstanceDefinition;
 use linkphp\loader\Loader;
 use linkphp\http\HttpRequest;
 use linkphp\Make;
 use linkphp\router\router\Router;
-use linkphp\event\Event;
-use linkphp\event\EventDefinition;
+use Event;
+use EventDefinition;
 use linkphp\db\Query;
 
 class Application
@@ -21,30 +20,50 @@ class Application
 
     //保存是否已经初始化
     private static $_init;
-    //links启动
-    static public function run()
+
+    /**
+     * 容器实例
+     * @var Container
+     */
+    private static $_container;
+
+    public function __construct()
     {
-        if(!isset(self::$_init)){
-            self::event('system');
-            //初次初始化执行
-            self::$_init = new self();
-        }
-        return self::$_init;
+        $container = new Container();
+        $container->bind(
+            self::definition()
+                ->setAlias('linkphp\di\Container')
+                ->setIsEager(true)
+                ->setIsSingleton(true)
+                ->setClassName('linkphp\di\Container')
+        );
+        static::$_container = $container;
     }
 
-    public function check()
+    //links启动
+    public function run()
+    {
+        $this->event('system');
+        return $this;
+    }
+
+    public function request($config = null)
     {
         IS_CLI ?
             self::env()
                 ->selectEnvModel(
                     self::singleton(
                         'envmodel',
-                        function(){
+                        function() use($config) {
                             self::singletonEager(
-                                'run',
-                                'linkphp\console\Console'
+                                \linkphp\console\Console::class,
+                                'linkphp\\console\\Console'
                             );
-                            return self::get('run');
+                            $run = self::make(\linkphp\console\Console::class);
+                            if(isset($config)){
+                                $run->setDaemon(true)->setDaemonConfig($config);
+                            }
+                            return $run;
                         })
                 )->requestCmdHandle() :
             self::env()
@@ -53,26 +72,21 @@ class Application
                         'envmodel',
                         function(){
                             self::singletonEager(
-                                'run',
+                                \linkphp\router\Router::class,
                                 'linkphp\router\Router'
                             );
-                            return self::get('run');
+                            return self::make(\linkphp\router\Router::class);
                         })
                 )->requestRouterHandle();
         return $this;
     }
 
-    public function request()
-    {
-        self::httpRequest()
-            ->start();
-        return $this;
-    }
-
     public function response()
     {
-        $this->setData(self::router()->getReturnData());
-        Application::hook('destructMiddleware');
+        $this->setData(
+            self::router()->getReturnData()
+        );
+        self::hook('destructMiddleware');
         self::httpRequest()
             ->setData($this->data)
             ->send();
@@ -97,8 +111,15 @@ class Application
      */
     static public function router($rule='',$tag='')
     {
-        if($rule=='' || $tag=='') return self::get('run');
-        return self::get('run')->rule($rule,$tag);
+        if($rule=='' || $tag=='') {
+            IS_CLI
+                ?
+                $router = self::make(\linkphp\console\Console::class)
+                :
+                $router = self::make(\linkphp\router\Router::class);
+            return $router;
+        };
+        return self::make(\linkphp\router\Router::class)->rule($rule,$tag);
     }
 
     /**
@@ -116,7 +137,7 @@ class Application
      */
     static public function httpRequest()
     {
-        return self::get('linkphp\http\Restful')->request();
+        return self::get('linkphp\http\HttpRequest');
     }
 
     /**
@@ -126,18 +147,18 @@ class Application
      */
     static public function get($alias)
     {
-        return Component::instance()->get($alias);
+        return static::$_container->get($alias);
     }
 
     static public function bind(InstanceDefinition $definition)
     {
-        return Component::instance()->bind($definition);
+        return static::$_container->bind($definition);
     }
 
     static public function singleton($alias,$callback)
     {
         return self::bind(
-            Application::definition()
+            self::definition()
                 ->setAlias($alias)
                 ->setIsSingleton(true)
                 ->setCallBack($callback)
@@ -147,7 +168,7 @@ class Application
     public static function singletonEager($alias,$callback)
     {
         return self::bind(
-            Application::definition()
+            self::definition()
                 ->setAlias($alias)
                 ->setIsEager(true)
                 ->setIsSingleton(true)
@@ -158,25 +179,36 @@ class Application
     public static function eager($alias,$callback)
     {
         return self::bind(
-            Application::definition()
+            self::definition()
                 ->setAlias($alias)
                 ->setIsEager(true)
                 ->setClassName($callback)
         );
     }
 
+    public static function containerInstance($alias, $instance)
+    {
+        self::bind(
+            self::definition()
+                ->setAlias($alias)
+                ->setIsSingleton(true)
+                ->setIsEager(true)
+                ->setInstance($instance)
+        );
+    }
+
     /**
      * 获取实例
-     * @return Definition
+     * @return InstanceDefinition
      */
     static public function definition()
     {
-        return (new Definition());
+        return (new InstanceDefinition());
     }
 
     static public function getContainerInstance()
     {
-        return Component::instance()->getContainerInstance();
+        return static::$_container->getContainerInstance();
     }
 
     static public function input($param='',$filter='')
@@ -195,12 +227,13 @@ class Application
     }
 
     /**
-     * 获取MAKE类实例
-     * @return Make
+     * 获取类实例
+     * @param $alias
+     * @return mixed
      */
-    static public function make()
+    static public function make($alias)
     {
-        return self::get('linkphp\boot\Make');
+        return self::get($alias);
     }
 
     /**
@@ -231,9 +264,9 @@ class Application
      * 获取装载类实例
      * @return Loader Object
      */
-    static public function Loader()
+    static public function loader()
     {
-        return Loader::instance();
+        return self::get('linkphp\\loader\\Loader');
     }
 
     /**
@@ -244,18 +277,18 @@ class Application
      */
     static public function event($server='',$events='')
     {
-        if($server == '') return Event::instance();
+        $eventObject = self::get('linkphp\event\Event');
+        if($server == '') return $eventObject;
         if($events != ''){
             if(is_array($events)){
                 $first = false;
-                $instance = Event::instance();
                 foreach($events as $event){
                     if($first){
-                        $instance->getEventMap($server)
+                        $eventObject->getEventMap($server)
                             ->register(new $event);
                         continue;
                     }
-                    $instance->provider(
+                    $eventObject->provider(
                         self::eventDefinition()
                             ->setServer($server)
                             ->register(new $event)
@@ -264,7 +297,7 @@ class Application
                 }
                 return;
             } else {
-                Event::instance()->provider(
+                $eventObject->provider(
                     self::eventDefinition()
                         ->setServer($server)
                         ->register(new $events)
@@ -272,7 +305,7 @@ class Application
                 return;
             }
         }
-        return Event::instance()->target($server);
+        return $eventObject->target($server);
     }
 
     /**
@@ -310,5 +343,18 @@ class Application
         return self::get('linkphp\db\Query');
     }
 
+    /**
+     * 获取Container类实例
+     * @return Container
+     */
+    public static function container()
+    {
+        return static::$_container;
+    }
+
+    public function app()
+    {
+        return self::get('linkphp\\Application');
+    }
 
 }
