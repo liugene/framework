@@ -4,6 +4,16 @@ use linkphp\Application;
 use linkphp\db\Query;
 use linkphp\http\HttpRequest;
 
+if (!function_exists('app')) {
+    /**
+     * @return Application
+     */
+    function app()
+    {
+        return Application::get('linkphp\\Application');
+    }
+}
+
 if (!function_exists('error')) {
     function error($url,$info=null,$wait=3)
     {

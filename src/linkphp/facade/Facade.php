@@ -3,7 +3,7 @@
 namespace linkphp\facade;
 
 use linkphp\Application;
-use linkphp\boot\Exception;
+use linkphp\Exception;
 
 class Facade
 {

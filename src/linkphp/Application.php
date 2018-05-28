@@ -3,15 +3,14 @@
 namespace linkphp;
 
 use linkphp\config\Config;
-use linkphp\boot\Environment;
 use linkphp\di\Container;
 use linkphp\di\InstanceDefinition;
 use linkphp\loader\Loader;
 use linkphp\http\HttpRequest;
 use linkphp\Make;
-use linkphp\router\router\Router;
+use linkphp\router\Router;
 use Event;
-use EventDefinition;
+use linkphp\event\EventDefinition;
 use linkphp\db\Query;
 
 class Application
@@ -47,47 +46,39 @@ class Application
         return $this;
     }
 
+    private function consoleMode($config)
+    {
+        if(isset($config)){
+            $this->make(\linkphp\console\Console::class)
+                ->setDaemon(true)
+                ->setDaemonConfig($config);
+        }
+        $this->event('console');
+    }
+
+    public function routerMode()
+    {
+        $this->event('router');
+    }
+
     public function request($config = null)
     {
-        IS_CLI ?
-            self::env()
-                ->selectEnvModel(
-                    self::singleton(
-                        'envmodel',
-                        function() use($config) {
-                            self::singletonEager(
-                                \linkphp\console\Console::class,
-                                'linkphp\\console\\Console'
-                            );
-                            $run = self::make(\linkphp\console\Console::class);
-                            if(isset($config)){
-                                $run->setDaemon(true)->setDaemonConfig($config);
-                            }
-                            return $run;
-                        })
-                )->requestCmdHandle() :
-            self::env()
-                ->selectEnvModel(
-                    self::singleton(
-                        'envmodel',
-                        function(){
-                            self::singletonEager(
-                                \linkphp\router\Router::class,
-                                'linkphp\router\Router'
-                            );
-                            return self::make(\linkphp\router\Router::class);
-                        })
-                )->requestRouterHandle();
+        $this->event('error');
+        IS_CLI
+            ?
+            $this->consoleMode($config)
+            :
+            $this->routerMode();
         return $this;
     }
 
-    public function response()
+    public function response($class)
     {
         $this->setData(
-            self::router()->getReturnData()
+            $this->make($class)->getReturnData()
         );
-        self::hook('destructMiddleware');
-        self::httpRequest()
+        $this->hook('destructMiddleware');
+        $this->httpRequest()
             ->setData($this->data)
             ->send();
     }
@@ -111,24 +102,7 @@ class Application
      */
     static public function router($rule='',$tag='')
     {
-        if($rule=='' || $tag=='') {
-            IS_CLI
-                ?
-                $router = self::make(\linkphp\console\Console::class)
-                :
-                $router = self::make(\linkphp\router\Router::class);
-            return $router;
-        };
         return self::make(\linkphp\router\Router::class)->rule($rule,$tag);
-    }
-
-    /**
-     * 获取环境实例
-     * @return Environment Object
-     */
-    static public function env()
-    {
-        return self::get('linkphp\boot\Environment');
     }
 
     /**
