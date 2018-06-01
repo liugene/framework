@@ -46,43 +46,6 @@ class Application
         return $this;
     }
 
-    private function consoleMode($config)
-    {
-        if(isset($config)){
-            $this->make(\linkphp\console\Console::class)
-                ->setDaemon(true)
-                ->setDaemonConfig($config);
-        }
-        $this->event('console');
-    }
-
-    public function routerMode()
-    {
-        $this->event('router');
-    }
-
-    public function request($config = null)
-    {
-        $this->event('error');
-        IS_CLI
-            ?
-            $this->consoleMode($config)
-            :
-            $this->routerMode();
-        return $this;
-    }
-
-    public function response($class)
-    {
-        $this->setData(
-            $this->make($class)->getReturnData()
-        );
-        $this->hook('destructMiddleware');
-        $this->httpRequest()
-            ->setData($this->data)
-            ->send();
-    }
-
     public function setData($data)
     {
         $this->data = $data;
