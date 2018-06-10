@@ -10,7 +10,7 @@ if (!function_exists('app')) {
      */
     function app()
     {
-        return Application::get('linkphp\\Application');
+        return Application::get('framework\\Application');
     }
 }
 
