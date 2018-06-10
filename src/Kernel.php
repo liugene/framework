@@ -1,7 +1,8 @@
 <?php
 
-namespace linkphp;
+namespace framework;
 use Closure;
+use linkphp\http\HttpRequest;
 
 abstract class Kernel
 {
@@ -10,9 +11,15 @@ abstract class Kernel
 
     protected $data;
 
-    public function __construct(Application $application)
+    /**
+     * @var HttpRequest
+     */
+    protected $_request;
+
+    public function __construct(Application $application, HttpRequest $httpRequest)
     {
         $this->_app = $application;
+        $this->_request = $httpRequest;
     }
 
     public function setData($data)

@@ -25,20 +25,12 @@ defined('__ATTACH__') or define('__ATTACH__', WEB_PATH . 'attachment/');
 defined('RUNTIME_PATH') or define('RUNTIME_PATH',ROOT_PATH . 'src/runtime/');
 //定义LinkPHP框架目录常量
 defined('FRAMEWORK_PATH') or define('FRAMEWORK_PATH', VENDOR_PATH . 'linkphp/framework/src/');
-//定义LinkPHP框架核心类目录常量
-defined('CORE_PATH') or define('CORE_PATH', FRAMEWORK_PATH . 'linkphp/boot/');
-//定义LinkPHP框架启动目录常量
-defined('BOOT_PATH') or define('BOOT_PATH', FRAMEWORK_PATH . 'linkphp/');
-//定义LinkPHP框架扩展类库目录常量
-defined('UTIL_PATH') or define('UTIL_PATH', FRAMEWORK_PATH . 'util/');
 //定义LinkPHP框架附加文件目录常量
 defined('EXTRA_PATH') or define('EXTRA_PATH', FRAMEWORK_PATH . 'extra/');
-//定义LinkPHP框架系统文件目录常量
-defined('SYSTEM_PATH') or define('SYSTEM_PATH', BOOT_PATH . 'system/');
 //定义LinkPHP框架语言目录常量
-defined('LANG_PATH') or define('LANG_PATH', BOOT_PATH . 'extra/lang/');
+defined('LANG_PATH') or define('LANG_PATH', FRAMEWORK_PATH . 'extra/lang/');
 //定义LinkPHP框架附件目录常量
-defined('TEMP_PATH') or define('TEMP_PATH', BOOT_PATH . 'extra/temp/');
+defined('TEMP_PATH') or define('TEMP_PATH', FRAMEWORK_PATH . 'extra/temp/');
 //定义LinkPHP扩展类库目录常量
 defined('EXTEND_PATH') or define('EXTEND_PATH', ROOT_PATH . 'ext/');
 

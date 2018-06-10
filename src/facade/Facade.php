@@ -1,9 +1,9 @@
 <?php
 
-namespace linkphp\facade;
+namespace framework\facade;
 
-use linkphp\Application;
-use linkphp\Exception;
+use framework\Application;
+use framework\Exception;
 
 class Facade
 {

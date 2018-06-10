@@ -1,6 +1,6 @@
 <?php
 
-namespace linkphp\interfaces;
+namespace framework\interfaces;
 
 interface DatabaseInterface
 {

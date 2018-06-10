@@ -1,6 +1,6 @@
 <?php
 
-namespace linkphp;
+namespace framework;
 
 use ArrayAccess;
 

@@ -1,17 +1,17 @@
 <?php
 
-use linkphp\facade\Facade;
+use framework\facade\Facade;
 use linkphp\di\Container;
 use linkphp\di\InstanceDefinition;
 
 /**
- * Class InstanceDefinition
- * @package linkphp\di\InstanceDefinition
+ * Class Container
+ * @package linkphp\di\\Container
  * @method Container bind(InstanceDefinition $definition) static 绑定
  *
  */
 
-class Definition extends Facade
+class Component extends Facade
 {
 
     /**
@@ -19,7 +19,7 @@ class Definition extends Facade
      */
     public static function getApplicationName()
     {
-        return 'linkphp\\di\\InstanceDefinition';
+        return 'linkphp\\di\\Container';
     }
 
 }

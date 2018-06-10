@@ -1,13 +1,13 @@
 <?php
 
-namespace linkphp;
+namespace framework;
 
 use linkphp\config\Config;
 use linkphp\di\Container;
 use linkphp\di\InstanceDefinition;
 use linkphp\loader\Loader;
 use linkphp\http\HttpRequest;
-use linkphp\Make;
+use framework\Make;
 use linkphp\router\Router;
 use Event;
 use linkphp\event\EventDefinition;
@@ -16,9 +16,6 @@ use linkphp\db\Query;
 class Application
 {
     private $data;
-
-    //保存是否已经初始化
-    private static $_init;
 
     /**
      * 容器实例
@@ -262,7 +259,7 @@ class Application
     {
         $view = self::get('linkphp\template\View');
         $view->assign($data);
-        $view->display($template);
+        return $view->display($template);
     }
 
     public static function cache($key,$value=null)

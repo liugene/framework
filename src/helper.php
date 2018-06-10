@@ -1,6 +1,6 @@
 <?php
 
-use linkphp\Application;
+use framework\Application;
 use linkphp\db\Query;
 use linkphp\http\HttpRequest;
 

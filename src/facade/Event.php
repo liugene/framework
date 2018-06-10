@@ -1,6 +1,6 @@
 <?php
 
-use linkphp\facade\Facade;
+use framework\facade\Facade;
 use linkphp\event\Event as EventReal;
 
 
