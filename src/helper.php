@@ -36,7 +36,7 @@ if (!function_exists('config')) {
      */
     function config($key='')
     {
-    return $key=='' ? Application::get('linkphp\config\Config') : Application::get('linkphp\config\Config')->get($key);
+        return $key=='' ? Application::get('linkphp\config\Config') : Application::get('linkphp\config\Config')->get($key);
     }
 }
 
@@ -50,13 +50,13 @@ if (!function_exists('url')) {
      */
     function url($c=null,$a=null,$p=null)
     {
-        $platform = isset($_GET[config('VAR_PLATFORM')]) ? ucfirst($_GET[config('VAR_PLATFORM')]) : config('DEFAULT_PLATFORM');
-        $p = is_null($p) ? $platform : $p;
-        $c = is_null($c) ? $_GET[config('VAR_CONTROLLER')] : ucfirst($c);
-        $a = is_null($a) ? $_GET[config('VAR_ACTION')] : ucfirst($a);
-        $url = 'index.php?' . config('VAR_PLATFORM') . '=' . $p . '&' . config('VAR_CONTROLLER') . '=' . $c . '&' . config('VAR_ACTION') . '=' . strtolower($a);
-
-        return $url;
+//        $platform = isset($_GET[config('VAR_PLATFORM')]) ? ucfirst($_GET[config('VAR_PLATFORM')]) : config('DEFAULT_PLATFORM');
+//        $p = is_null($p) ? $platform : $p;
+//        $c = is_null($c) ? $_GET[config('VAR_CONTROLLER')] : ucfirst($c);
+//        $a = is_null($a) ? $_GET[config('VAR_ACTION')] : ucfirst($a);
+//        $url = 'index.php?' . config('VAR_PLATFORM') . '=' . $p . '&' . config('VAR_CONTROLLER') . '=' . $c . '&' . config('VAR_ACTION') . '=' . strtolower($a);
+//
+//        return $url;
     }
 }
 

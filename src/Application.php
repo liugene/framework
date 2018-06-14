@@ -7,15 +7,18 @@ use linkphp\di\Container;
 use linkphp\di\InstanceDefinition;
 use linkphp\loader\Loader;
 use linkphp\http\HttpRequest;
-use framework\Make;
 use linkphp\router\Router;
-use Event;
 use linkphp\event\EventDefinition;
 use linkphp\db\Query;
 
 class Application
 {
     private $data;
+
+    // Hook扩展方法
+    protected static $injection = [];
+    // 绑定的属性
+    protected $bind = [];
 
     /**
      * 容器实例
@@ -289,6 +292,19 @@ class Application
     public function app()
     {
         return self::get('linkphp\\Application');
+    }
+
+    /**
+     * injection 方法注入
+     * @access public
+     * @param string  $class
+     * @param mixed         $method 方法名
+     * @param array $values
+     * @return object
+     */
+    public static function injection($class, $method, $values = [])
+    {
+        return self::$_container->injection($class, $method, $values);
     }
 
 }
