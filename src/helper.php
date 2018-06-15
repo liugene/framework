@@ -66,7 +66,7 @@ if (!function_exists('request')) {
      */
     function request()
     {
-        return Application::get('linkphp\\http\\Restful')->request();
+        return Application::get('linkphp\\http\\HttpRequest');
     }
 }
 
@@ -88,7 +88,7 @@ if (!function_exists('input')) {
      */
     function input($param='',$filter='')
     {
-        return Application::get('linkphp\\boot\\http\\Restful')->request()->input($param,$filter);
+        return Application::get('linkphp\\http\\HttpRequest')->input($param,$filter);
     }
 }
 
