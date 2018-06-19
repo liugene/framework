@@ -3,6 +3,7 @@
 use framework\Application;
 use linkphp\db\Query;
 use linkphp\http\HttpRequest;
+use linkphp\http\HttpResponse;
 
 if (!function_exists('app')) {
     /**
@@ -92,31 +93,6 @@ if (!function_exists('input')) {
     }
 }
 
-if (!function_exists('lang')) {
-    /**
-     * @param string $language
-     * lang方法 获取系统语言包
-     * @return string
-     */
-    function lang($language){
-        switch(C('DEFAULT_LANGUAGE')){
-            case 'cn':
-                $conf = require INC_PATH . 'Lang/cn.php';
-                break;
-            case 'tw':
-                $conf = require INC_PATH . 'Lang/tw.php';
-                break;
-            case 'en':
-                $conf = require INC_PATH . 'Lang/en.php';
-                break;
-            default:
-                $conf = require INC_PATH . 'Lang/cn.php';
-                break;
-        }
-        return $conf[$language];
-    }
-}
-
 if (!function_exists('dump')) {
     /**
      * @param mixed $var
@@ -145,12 +121,14 @@ if (!function_exists('view')) {
     /**
      * @param mixed $template
      * @param array $data
+     * @return HttpResponse
      */
     function view($template,$data=[])
     {
-        $view = Application::get('linkphp\template\View');
+        $app = app();
+        $view = $app->get('linkphp\template\View');
         $view->assign($data);
-        $view->display($template);
+        return HttpResponse::create($view->display($template), 'View');
     }
 }
 
