@@ -40,6 +40,12 @@ abstract class Kernel
         return $this;
     }
 
+    public function daemon(Closure $closure)
+    {
+        call_user_func($closure);
+        return $this;
+    }
+
     abstract public function complete();
 
 }
