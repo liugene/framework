@@ -148,7 +148,8 @@ class Controller
             }
         }
 
-        header("location:" . rtrim($url, '&'));
+        HttpResponse::create('', 'view', '302')
+            ->header("Location" , rtrim($url, '&'))->send();
     }
 
     /**
