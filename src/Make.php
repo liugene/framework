@@ -1,6 +1,4 @@
 <?php
-
-namespace framework;
 // +----------------------------------------------------------------------
 // | LinkPHP [ Link All Thing ]
 // +----------------------------------------------------------------------
@@ -13,8 +11,12 @@ namespace framework;
 // |               LinkPHP框架系统核心目录常见类
 // +----------------------------------------------------------------------
 
+namespace framework;
 
-class Make{
+use Config;
+
+class Make
+{
 
     static public function dir(){}
 

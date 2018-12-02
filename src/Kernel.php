@@ -1,6 +1,7 @@
 <?php
 
 namespace framework;
+
 use Closure;
 use linkphp\http\HttpRequest;
 

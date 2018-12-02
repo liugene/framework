@@ -210,9 +210,10 @@ class Application
      * 获取事件类实例
      * @param string $server
      * @param string|array $events
+     * @param bool $eager 是否立即执行
      * @return mixed
      */
-    static public function event($server='',$events='')
+    static public function event($server='',$events='', $eager=false)
     {
         $eventObject = self::get('linkphp\event\Event');
         if($server == '') return $eventObject;
@@ -232,13 +233,15 @@ class Application
                     );
                     $first=true;
                 }
-                return;
             } else {
                 $eventObject->provider(
                     self::eventDefinition()
                         ->setServer($server)
                         ->register(new $events)
                 );
+            }
+
+            if(!$eager){
                 return;
             }
         }

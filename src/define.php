@@ -35,6 +35,7 @@ defined('TEMP_PATH') or define('TEMP_PATH', FRAMEWORK_PATH . 'extra/temp/');
 defined('EXTEND_PATH') or define('EXTEND_PATH', ROOT_PATH . 'ext/');
 
 //系统可变常量
+defined('ENV_PREFIX') or define('ENV_PREFIX', 'PHP_'); // 环境变量的配置前缀
 defined('APP_INTERFACE_ON') or define('APP_INTERFACE_ON','FALSE'); //开启接口应用
 defined('APP_NAMESPACE_NAME') or define('APP_NAMESPACE_NAME','app'); //定义应用名称
 defined('APP_DEBUG') or define('APP_DEBUG',FALSE); //开启站点调试
