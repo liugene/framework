@@ -16,8 +16,6 @@ abstract class Model
     protected $connection = [];
     // 数据表字段信息 留空则自动获取
     protected $field = [];
-    // 数据库查询对象
-    protected $query;
     // 当前模型名称
     protected $name;
     // 数据表名称
@@ -29,9 +27,17 @@ abstract class Model
     // 错误信息
     protected $error;
     // 创建时间字段
-    protected $createTime = 'create_time';
+    protected $createTime;
     // 更新时间字段
-    protected $updateTime = 'update_time';
+    protected $updateTime;
+    //数据
+    protected $data = [];
+
+    protected $numRows;
+
+    protected $append = [];
+    // 时间字段取出后的默认时间格式
+    protected $dateFormat;
 
     /**
      * 构造方法
@@ -51,6 +57,11 @@ abstract class Model
             // 当前模型名
             $name       = str_replace('\\', '/', $this->class);
             $this->name = basename($name);
+        }
+
+        if (is_null($this->dateFormat)) {
+            // 设置时间戳格式
+            $this->dateFormat = $this->getQuery()->getConfig('datetime_format');
         }
     }
 
@@ -115,6 +126,54 @@ abstract class Model
         return self::$links[$this->class];
     }
 
+    /** 设置数据对象的值
+     * @access public
+     * @param string $name 名称
+     * @param mixed $value 值
+     * @return void
+     */
+    public function __set($name, $value)
+    {
+        // TODO: Implement __set() method.
+        $this->data[$name] = $value;
+    }
+
+    /**
+     * 获取数据对象的值
+     * @access public
+     * @param string $name 名称
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        // TODO: Implement __get() method.
+        return isset($this->data[$name]) ? $this->data[$name] : null;
+    }
+
+    /**
+     * 检测数据对象的值
+     * @access public
+     * @param string $name 名称
+     * @return boolean
+     */
+    public function __isset($name)
+    {
+        // TODO: Implement __isset() method.
+        return isset($this->data[$name]);
+    }
+
+    /**
+     * 销毁数据对象的值
+     * @access public
+     * @param string $name 名称
+     * @return void
+     */
+    public function __unset($name)
+    {
+        // TODO: Implement __unset() method.
+        unset($this->data[$name]);
+    }
+
     /**
      * @param array $data 插入数据
      * @return int 返回数据语句执行结果影响的表ID
@@ -126,11 +185,28 @@ abstract class Model
             return false;
         }
 
+        if($this->dateFormat && $this->updateTime && $this->createTime){
+            $time = date('Y-m-d H:i:s', time());
+            $data[$this->updateTime] = $time;
+            $data[$this->createTime] = $time;
+        } else {
+            $time =  time();
+            $data[$this->updateTime] =  $time;
+            $data[$this->createTime] =  $time;
+        }
+
         $response = $this->getQuery()->insert($data);
 
         if (false === $this->trigger('after_insert', $this)) {
             return false;
         }
+        return $response;
+    }
+
+    public function save($where=[])
+    {
+        $response = $this->update($this->data, $where);
+
         return $response;
     }
 
@@ -144,6 +220,7 @@ abstract class Model
     {
         return $this->getQuery()->where($condition);
     }
+
 
     //delete
     public function delete($data=null)
@@ -161,13 +238,24 @@ abstract class Model
         return $response;
     }
 
-    public function update($data)
+    public function update($data, $where=[])
     {
+
         if (false === $this->trigger('before_update', $this)) {
             return false;
         }
 
-        $response = $this->getQuery()->update($data);
+        if($this->dateFormat && $this->updateTime){
+            $data[$this->updateTime] = date('Y-m-d H:i:s', time());
+        } else {
+            $data[$this->updateTime] = time();
+        }
+
+        if($where) {
+            $response = $this->getQuery()->where($where)->update($data);
+        } else {
+            $response = $this->getQuery()->update($data);
+        }
 
         if (false === $this->trigger('after_update', $this)) {
             return false;
@@ -178,7 +266,50 @@ abstract class Model
 
     public function select($data=null)
     {
-        return $this->getQuery()->select($data);
+
+        //是否设置了查询字段
+        if($fields = $this->parseFields()){
+            $origin = $this->getQuery()->field($fields)->select($data);
+        } else {
+            $origin = $this->getQuery()->select($data);
+        }
+        $this->data = $origin;
+        $this->numRows = $this->getQuery()->getNumRows();
+        return $this;
+    }
+
+    public function find($data=null)
+    {
+
+        //是否设置了查询字段
+        if($fields = $this->parseFields()){
+            $origin = $this->getQuery()->field($fields)->find($data);
+        } else {
+            $origin = $this->getQuery()->find($data);
+        }
+        $this->data = $origin;
+        $this->numRows = $this->getQuery()->getNumRows();
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return $this->data;
+    }
+
+    public function toJson()
+    {
+        return json_encode($this->data, true);
+    }
+
+    public function parseFields()
+    {
+        if($this->field){
+            $fields = implode(',', $this->field);
+            return $fields;
+        }
+
+        return false;
     }
 
     public function count($filed='*')
@@ -210,14 +341,69 @@ abstract class Model
         return $this->getQuery()->query($sql);
     }
 
+    public function limit($limit)
+    {
+        return $this->getQuery()->limit($limit);
+    }
+
+    public function join($join)
+    {
+        return $this->getQuery()->join($join);
+    }
+
+    public function lock($lock)
+    {
+        return $this->getQuery()->lock($lock);
+    }
+
+    public function having($having)
+    {
+        return $this->getQuery()->having($having);
+    }
+
+    public function union($union)
+    {
+        return $this->getQuery()->union($union);
+    }
+
+    public function leftJoin($join)
+    {
+        return $this->getQuery()->leftJoin($join);
+    }
+
+    public function rightJoin($join)
+    {
+        return $this->getQuery()->rightJoin($join);
+    }
+
+    public function commit()
+    {
+        $this->getQuery()->commit();
+    }
+
+    public function rollback()
+    {
+        $this->getQuery()->rollback();
+    }
+
+    public function beginTransaction()
+    {
+        $this->getQuery()->beginTransaction();
+    }
+
+    public function group($group)
+    {
+        return $this->getQuery()->group($group);
+    }
+
+    public function order($order)
+    {
+        return $this->getQuery()->order($order);
+    }
+
     public function getLastSql()
     {
         return $this->getQuery()->getLastSql();
-    }
-
-    public function find($data=null)
-    {
-        return $this->getQuery()->find($data);
     }
 
     /**

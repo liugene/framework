@@ -47,7 +47,7 @@ interface DatabaseInterface
 
     public function getLastSql();
 
-    public function transaction();
+    public function transaction($callback);
 
     public function beginTransaction();
 
