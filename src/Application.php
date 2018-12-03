@@ -65,7 +65,12 @@ class Application
      */
     static public function router($rule='',$tag='')
     {
-        return self::make(\linkphp\router\Router::class)->rule($rule,$tag);
+
+        if($rule && $tag){
+            return self::make(\linkphp\router\Router::class)->rule($rule,$tag);
+        }
+
+        return self::make(\linkphp\router\Router::class);
     }
 
     /**

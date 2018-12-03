@@ -132,17 +132,47 @@ if (!function_exists('view')) {
     }
 }
 
-//封装多维数组转换为一维数组方法
-function arr($arr){
-    static $array = array();
-    //对传入的数组进行遍历
-    foreach($arr as $value){
-        //判断是否为数组
-        if(is_array($value)){
-            arr($value);
-        } else {
-            $array[] = $value;
+if(!function_exists('arrTo')){
+    //封装多维数组转换为一维数组方法
+    function arrTo($arr){
+        static $array = array();
+        //对传入的数组进行遍历
+        foreach($arr as $value){
+            //判断是否为数组
+            if(is_array($value)){
+                arrTo($value);
+            } else {
+                $array[] = $value;
+            }
         }
+        return $array;
     }
-    return $array;
+}
+
+if(!function_exists('model')){
+    /**
+     * @param mixed $name
+     * @return \framework\Model
+     */
+    function model($name){
+
+        $router = Application::router();
+        $namespace = $router->getNamespace();
+        $module = $router->getPlatform();
+
+        $class = $namespace . '\\' . $module . '\\model\\' . ucfirst($name);
+
+        if(class_exists($class)){
+            return Application::get($class);
+        } else {
+            if (strpos($name, '/')) {
+                $class = str_replace('/', '\\', $name);
+
+                if(class_exists($class)){
+                    return Application::get($class);
+                }
+            }
+        }
+        return null;
+    }
 }
