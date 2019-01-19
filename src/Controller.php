@@ -37,6 +37,12 @@ class Controller
     protected $beforeActionList = [];
 
     /**
+     * @var array 操作方法返回方式
+     * ['view', 'json', 'console', 'xml', 'jsonp']
+     */
+    protected $returnType = [];
+
+    /**
      * 构造方法
      * @access public
      * @param \linkphp\http\HttpRequest $request Request 对象
@@ -129,9 +135,15 @@ class Controller
         HttpResponse::create($result, $type)->header($header)->send();
     }
 
-    public function display($template)
+    public function display($template = '')
     {
-        return $this->view->display($template);
+        return $this->view->display(
+            $template
+                ?
+                $template
+                :
+                $this->router->getPlatform().'/'.strtolower($this->router->getController()).'/'.$this->router->getAction()
+        );
     }
 
     public function assign($name,$value=null)
@@ -150,6 +162,22 @@ class Controller
 
         HttpResponse::create('', 'view', '302')
             ->header("Location" , rtrim($url, '&'))->send();
+    }
+
+    /**
+     * 获取当前的 response 输出类型
+     * @access public
+     * @param $action string 方法 ['view', 'json', 'console', 'xml', 'jsonp']
+     * @return string|boolean
+     */
+    public function getReturnType($action)
+    {
+        if(isset($this->returnType[$action])){
+
+            return $this->returnType[$action];
+        }
+
+        return false;
     }
 
     /**

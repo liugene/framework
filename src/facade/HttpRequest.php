@@ -1,12 +1,12 @@
 <?php
 
 use framework\facade\Facade;
-use linkphp\http\Restful;
+use linkphp\http\HttpRequest as HttpRequestRel;
 
 
 /**
- * Class HttpRequest
- * @package linkphp\event
+ * Class HttpRequestRel
+ * @package linkphp\http
  * @method Restful bind(string $definition) static 绑定
  *
  */
@@ -19,7 +19,7 @@ class HttpRequest extends Facade
      */
     public static function getApplicationName()
     {
-        return 'linkphp\\http\\Restful';
+        return 'linkphp\\http\\HttpRequest';
     }
 
 }

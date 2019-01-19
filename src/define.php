@@ -6,7 +6,7 @@ const SYS = '.php';
 const DS = '\\';
 
 //版本信息
-define('LINKPHP_VERSION','1.0.0');
+define('LINKPHP_VERSION','1.2.0');
 //声明应用根命名空间
 //声明路径常量
 
